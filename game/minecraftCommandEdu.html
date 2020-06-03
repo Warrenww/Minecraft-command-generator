@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft教育版指令產生器</title>
+    <link rel="icon" href="/public/image/minecraftEDU_icon.png">
+    <link rel='stylesheet' href='/public/stylesheet/index.css'>
+    <link rel='stylesheet' href='/public/stylesheet/minecraft.css'>
+  </head>
+  <body>
+    <div class="content" style="position:sticky; top:10px; z-index:100; box-shadow: 0 0 10px;background: rgba(215, 161, 103, 0.52)">
+      <label style="font-size: 20px; font-weight: bold;">指令結果</label>
+      <input id="result" type="text" readonly="readonly"/>
+      <button onclick="copyCommand()">複製</button>
+    </div>
+
+    <form class="content" id="selector">
+      <h1>實體選擇器</h1>
+      <div>
+        <label style="font-size: 20px; font-weight: bold;">基礎選擇器</label>
+        <select id="selector_base">
+          <option value="@e">所有實體</option>
+          <option value="@a">所有玩家</option>
+          <option value="@p">最近玩家</option>
+          <option value="@r">隨機玩家(實體)</option>
+          <option value="@s">自己</option>
+        </select>
+      </div>
+      <h2>其他條件</h2>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_type"/>
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_type" data-key="type">種類</label>
+        <select>
+          <option value="=">等於</option>
+          <option value="=!">不等於</option>
+        </select>
+        <select class='entity_selector'></select>
+      </div>
+      <div class="constrain">
+        <input type="checkbox"  id="constrain_distance"/>
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_distance" data-key="">距離</label>
+        <select>
+          <option value="r=">小於</option>
+          <option value="rm=">大於</option>
+        </select>
+        <input type='number' value='1' min='0' />
+      </div>
+      <div class="constrain">
+        <input type="checkbox"  id="constrain_level"/>
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_level" data-key="">等級</label>
+        <select>
+          <option value="l=">小於</option>
+          <option value="lm=">大於</option>
+        </select>
+        <input type='number' value='1' min='0' />
+      </div>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_name" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_name" data-key="name">名稱</label>
+        <select>
+          <option value="=">等於</option>
+          <option value="=!">不等於</option>
+        </select>
+        <input type='text' value='a'/>
+      </div>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_number" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_number" data-key="c=">數量</label>
+        <input type='number' value='1'/>
+      </div>
+      <label style="font-size: 20px; font-weight: bold;" for="constrain_name" data-key="">基準點</label>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_x" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_x" data-key="x=">X=</label>
+        <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+      </div>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_y" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_y" data-key="y=">Y=</label>
+        <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+      </div>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_z" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_z" data-key="z=">Z=</label>
+        <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+      </div>
+      <label style="font-size: 20px; font-weight: bold;" for="constrain_name" data-key="">範圍</label>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_dx" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_dx" data-key="dx=">寬(X)</label>
+        <input type='number' value='0'/>
+      </div>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_dy" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_dy" data-key="dy=">高(Y)</label>
+        <input type='number' value='0'/>
+      </div>
+      <div class="constrain">
+        <input type="checkbox" id="constrain_dz" />
+        <label style="font-size: 20px; font-weight: bold;" for="constrain_dz" data-key="dz=">深(Z)</label>
+        <input type='number' value='0'/>
+      </div>
+
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="title" commad="title">
+      <h1>Title</h1>
+      <h2>
+        在選定目標的相應標題位置生成標題文字、清除目標當前標題、設定或重設之後所有標題的淡入淡出持續時間
+        <sup style="font-weight:0;color:#555">*單位為1 tick(1/20秒) </sup>
+      </h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/title</th>
+          <th>目標</th>
+          <th>標題位置 / 其他功能</th>
+          <th class='title subtitle actionbar hide'>標題文字</th>
+          <th class='times hide' style="display:none">淡入時間</th>
+          <th class='times hide' style="display:none">持續時間</th>
+          <th class='times hide' style="display:none">淡出時間</th>
+        </tr>
+        <tr>
+          <td>/title</td>
+          <td>
+            <select data-dismisschange>
+              <option value="@a">所有玩家</option>
+              <option value="@p">最近玩家</option>
+              <option value="@r">隨機玩家(實體)</option>
+              <option value="@s">自己</option>
+              <option value="@e">所有實體</option>
+            </select>
+          </td>
+          <td>
+            <select>
+              <option value="title"> 主要標題位置 </option>
+              <option value="subtitle"> 副標題 </option>
+              <option value="actionbar"> 玩家快捷列上方 </option>
+              <option value="clear"> 清除標題 </option>
+              <option value="times"> 設定標題時間 </option>
+              <option value="reset"> 重設標題時間 </option>
+            </select>
+          </td>
+          <td class='title subtitle actionbar hide'> <input type="text" value="title" /> </td>
+          <td class='times hide' style="display:none"> <input type="number" value='6' /> </td>
+          <td class='times hide' style="display:none"> <input type="number" value='60' /> </td>
+          <td class='times hide' style="display:none"> <input type="number" value='6' /> </td>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="summon" commad="summon">
+      <h1>Summon</h1>
+      <h2>在指定位置召喚實體(Entity)</h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/summon</th>
+          <th>實體</th>
+          <th>位置</th>
+        </tr>
+        <tr>
+          <td>/summon </td>
+          <td>
+            <select>
+              <optgroup label="掉落物">
+               <option value="xp_orb">經驗球</option>
+              </optgroup>
+              <optgroup label="方塊">
+                <option value="tnt">點燃的TNT</option>
+                <option value="falling_block">掉落的方塊</option>
+                <option value="moving_block">移動的方塊</option>
+              </optgroup>
+              <optgroup label="固體和彈射物">
+                <option value="armor_stand">盔甲座</option>
+                <option value="xp_bottle">扔出的經驗瓶</option>
+                <option value="eye_of_ender_signal">扔出的終界之眼</option>
+                <option value="ender_crystal">終界水晶</option>
+                <option value="fireworks_rocket">煙火</option>
+                <option value="thrown_trident">三叉戟</option>
+                <option value="shulker_bullet">界伏蚌飛彈</option>
+                <option value="fishing_hook">魚鉤浮標</option>
+                <option value="dragon_fireball">終界龍火球</option>
+                <option value="arrow">射出的箭</option>
+                <option value="snowball">扔出的雪球</option>
+                <option value="egg">扔出的雞蛋</option>
+                <option value="painting">畫</option>
+                <option value="minecart">礦車</option>
+                <option value="fireball">地獄幽靈火球</option>
+                <option value="splash_potion">扔出的飛濺藥水</option>
+                <option value="ender_pearl">扔出的終界珍珠</option>
+                <option value="leash_knot">拴繩結</option>
+                <option value="wither_skull">凋零怪之首</option>
+                <option value="boat">船</option>
+                <option value="wither_skull_dangerous">藍色凋零怪之首</option>
+                <option value="lightning_bolt">閃電</option>
+                <option value="small_fireball">烈焰使者火球</option>
+                <option value="area_effect_cloud">效果區域雲</option>
+                <option value="hopper_minecart">漏斗礦車</option>
+                <option value="tnt_minecart">TNT礦車</option>
+                <option value="chest_minecart">儲物箱礦車</option>
+                <option value="command_block_minecart">指令方塊礦車</option>
+                <option value="lingering_potion">扔出的滯留藥水</option>
+                <option value="llama_spit">駱馬唾液</option>
+                <option value="evocation_fang">尖牙</option>
+                <option value="ice_bomb">冰彈</option>
+                <option value="balloon">氣球</option>
+              </optgroup>
+              <optgroup label="攻擊型生物">
+                <option value="zombie">殭屍</option>
+                <option value="creeper">苦力怕</option>
+                <option value="skeleton">骷髏</option>
+                <option value="spider">蜘蛛</option>
+                <option value="zombie_pigman">殭屍豬人</option>
+                <option value="slime">史萊姆</option>
+                <option value="enderman">終界使者</option>
+                <option value="silverfish">蠹魚</option>
+                <option value="cave_spider">洞穴蜘蛛</option>
+                <option value="ghast">地獄幽靈</option>
+                <option value="magma_cube">岩漿立方怪</option>
+                <option value="blaze">烈焰使者</option>
+                <option value="zombie_villager">殭屍村民</option>
+                <option value="witch">女巫</option>
+                <option value="stray">流髑</option>
+                <option value="husk">屍殼</option>
+                <option value="wither_skeleton">凋零骷髏</option>
+                <option value="guardian">深海守衛</option>
+                <option value="elder_guardian">遠古深海守衛</option>
+                <option value="wither">凋零怪</option>
+                <option value="ender_dragon">終界龍</option>
+                <option value="shulker">界伏蚌</option>
+                <option value="endermite">終界蟎</option>
+                <option value="vindicator">衛道士</option>
+                <option value="phantom">夜魅</option>
+                <option value="ravager">劫毀獸</option>
+                <option value="evocation_illager">喚魔者</option>
+                <option value="vex">惱鬼</option>
+                <option value="drowned">沉屍</option>
+                <option value="pillager">掠奪者</option>
+                <option value="zombie_villager_v2">殭屍村民</option>
+              </optgroup>
+              <optgroup label="被動型和中立型生物">
+                <option value="chicken">雞</option>
+                <option value="cow">牛</option>
+                <option value="pig">豬</option>
+                <option value="sheep">羊</option>
+                <option value="wolf">狼</option>
+                <option value="villager">村民</option>
+                <option value="mooshroom">哞菇</option>
+                <option value="squid">魷魚</option>
+                <option value="rabbit">兔子</option>
+                <option value="bat">蝙蝠</option>
+                <option value="iron_golem">鐵魔像</option>
+                <option value="snow_golem">雪人</option>
+                <option value="ocelot">山貓</option>
+                <option value="horse">馬</option>
+                <option value="donkey">驢子</option>
+                <option value="mule">騾子</option>
+                <option value="skeleton_horse">骷髏馬</option>
+                <option value="zombie_horse">殭屍馬</option>
+                <option value="polar_bear">北極熊</option>
+                <option value="llama">駱馬</option>
+                <option value="parrot">鸚鵡</option>
+                <option value="dolphin">海豚</option>
+                <option value="turtle">海龜</option>
+                <option value="cat">流浪貓</option>
+                <option value="pufferfish">河豚</option>
+                <option value="salmon">鮭魚</option>
+                <option value="tropicalfish">熱帶魚</option>
+                <option value="cod">鱈魚</option>
+                <option value="panda">貓熊</option>
+                <option value="villager_v2">村民</option>
+                <option value="wandering_trader">流浪商人</option>
+              </optgroup>
+              <optgroup label="其他">
+               <option value="player">玩家</option>
+              </optgroup>
+              <optgroup label="教育版">
+                <option value="npc">NPC</option>
+                <option value="agent">吉祥物</option>
+                <option value="tripod_camera">相機</option>
+                <option value="chalkboard">黑板</option>
+              </optgroup>
+            </select>
+          </td>
+          <td>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </td>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="setblock" commad="setblock">
+      <h1>Set block</h1>
+      <h2>
+        <pre>
+          在指定位置生成指定方塊
+          方塊參數用來表明該物品的不同型態
+          執行模式有:
+              replace : 將指定位置原方塊無條件用此方塊取代(預設)
+              destroy : 將指定位置原方塊破壞(生成掉落物)後以此方塊取代
+              keep : 若指定位置已有非空氣方塊，則不取代該方塊
+        </pre>
+      </h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/setblock</th>
+          <th>位置</th>
+          <th>方塊</th>
+          <th>方塊參數</th>
+          <th>執行模式</th>
+        </tr>
+        <tr>
+          <td>/setblock </td>
+          <td>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </td>
+          <td>
+            <select class="block_selector"></select>
+          </td>
+          <td> <input type="number" value="0"/> </td>
+          <td>
+            <select>
+              <option value="replace">無條件取代</option>
+              <option value="destroy">破壞後取代</option>
+              <option value="keep">不取代非空氣方塊</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="fill" commad="fill">
+      <h1>Fill</h1>
+      <h2>
+        <pre>
+          用指定方塊替換填充區域內所有方塊
+          方塊參數用來表明該物品的不同型態
+          執行模式有:
+              replace : 將指定位置原方塊無條件用此方塊取代(預設)
+              destroy : 將指定位置原方塊破壞(生成掉落物)後以此方塊取代
+              hollow : 僅替換填充區域外層的方塊。內部方塊被替換為空氣
+              outline : 僅替換填充區域外層的方塊。內部方塊不受影響。
+              keep : 若指定位置已有非空氣方塊，則不取代該方塊
+        </pre>
+      </h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/fill</th>
+          <th colspan='2'>/fill</th>
+        </tr>
+        <tr>
+          <th rowspan='2'>位置</th>
+          <th>起點</th>
+          <th>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>終點</th>
+          <th>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>方塊</th>
+          <th colspan='2'>
+            <select class="block_selector"></select>
+          </th>
+        </tr>
+        <tr>
+          <th>方塊參數</th>
+          <th colspan='2'> <input type="number" value="0"/> </th>
+        </tr>
+        <tr>
+          <th>執行模式</th>
+          <th colspan='2'>
+            <select>
+              <option value="replace">無條件取代</option>
+              <option value="destroy">破壞後取代</option>
+              <option value="hollow">填充外層,內部替換為空氣</option>
+              <option value="outline">填充外層,內部不受影響</option>
+              <option value="keep">不取代非空氣方塊</option>
+            </select>
+          </th>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="clone" commad="clone">
+      <h1>Clone</h1>
+      <h2>
+        <pre>
+          將源區域中所有方塊複製到目標區域
+          執行模式有:
+              replace : 用源區域的方塊覆蓋目標區域中的所有方塊
+              masked : 僅複製源區域中的非空氣方塊
+              filtered : 僅複製符合指定方塊的方塊
+          執行方法有:
+              force : 強制複製，即使源區域與目標區域有重疊
+              move : 將源區域複製到目標區域，並將源區域替換為空氣
+              normal : 不執行force與move
+        </pre>
+      </h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/clone</th>
+          <th colspan='2'>/clone</th>
+        </tr>
+        <tr>
+          <th rowspan='2'>源區域</th>
+          <th>起點</th>
+          <th>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>終點</th>
+          <th>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>目標區域</th>
+          <th>起點</th>
+          <th colspan='2'>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>執行模式</th>
+          <th colspan='2'>
+            <select>
+              <option value="replace">覆蓋所有方塊</option>
+              <option value="masked">僅非空氣方塊</option>
+              <option value="filtered">符合指定的方塊</option>
+            </select>
+          </th>
+        </tr>
+        <tr>
+          <th>執行方法</th>
+          <th colspan='2'>
+            <select data-dismisschange>
+              <option value="normal">正常</option>
+              <option value="force">強制複製</option>
+              <option value="move">移動</option>
+            </select>
+          </th>
+        </tr>
+        <tr class='filtered hide' style="display:none">
+          <th rowspan='2'>指定方塊</th>
+          <th>方塊</th>
+          <th> <select class="block_selector" data-dismisschange></select> </th>
+        </tr>
+        <tr class='filtered hide' style="display:none">
+          <th>方塊數據</th>
+          <th> <input type='number' value='0' /> </th>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="testforblocks" commad="testforblocks">
+      <h1>Test for blocks</h1>
+      <h2>
+        <pre>
+          測試兩個區域中的方塊是否相同
+          不限於方塊的種類、位置，也包括方塊的「狀態」
+          執行模式有:
+              masked : 忽略原區域的空氣方塊
+              all : 所有方塊都必須相同
+        </pre>
+      </h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/testforblocks</th>
+          <th colspan='2'>/testforblocks</th>
+        </tr>
+        <tr>
+          <th rowspan='2'>源區域</th>
+          <th>起點</th>
+          <th>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>終點</th>
+          <th>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>目標區域</th>
+          <th>起點</th>
+          <th colspan='2'>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+          </th>
+        </tr>
+        <tr>
+          <th>執行模式</th>
+          <th colspan='2'>
+            <select>
+              <option value="all">所有方塊都必須相同</option>
+              <option value="masked">忽略原區域的空氣方塊</option>
+            </select>
+          </th>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="replaceitem" commad="replaceitem">
+      <h1>Replace Item</h1>
+      <h2>
+        替換方塊（儲物箱，熔爐等）或實體（玩家或生物）物品欄內的物品。
+      </h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/replaceitem</th>
+          <th colspan='2'>/replaceitem</th>
+        </tr>
+        <tr>
+          <th>目標</th>
+          <th>
+            <select>
+              <option value="block">方塊</option>
+              <option value="entity">實體</option>
+            </select>
+          </th>
+          <th>
+            <input class="block hide" type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input class="block hide" type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <input class="block hide" type="text" pattern="(~?-?[0-9]*\.?[0-9]*)" value="~"/>
+            <select class="entity hide" style="display: none" data-dismisschange>
+              <option value="@a">所有玩家</option>
+              <option value="@p">最近玩家</option>
+              <option value="@r">隨機玩家(實體)</option>
+              <option value="@s">自己</option>
+              <option value="@e">所有實體</option>
+            </select>
+          </th>
+        </tr>
+        <tr>
+          <th rowspan="2">欄位</th>
+          <th>類型</th>
+          <th>
+            <select data-dismisschange>
+              <option value="slot.armor.chest">胸甲</option>
+              <option value="slot.armor.feet">鞋子</option>
+              <option value="slot.armor.head">頭盔</option>
+              <option value="slot.armor.legs">護腿</option>
+              <option value="slot.weapon.mainhand">右手</option>
+              <option value="slot.weapon.offhand">左手</option>
+              <option value="slot.enderchest">終界箱</option>
+              <option value="slot.hotbar">快捷列</option>
+              <option value="slot.inventory">背包</option>
+              <option value="slot.saddle‌‌">鞍</option>
+              <option value="slot.armor‌‌">馬鎧</option>
+              <option value="slot.chest">馬/驢負重箱</option>
+            </select>
+          </th>
+        </tr>
+        <tr>
+          <th>位置</th>
+          <th>
+            <input type="number" min='0' value="0"/>
+          </th>
+        </tr>
+        <tr>
+          <th>物品</th>
+          <th colspan="2">
+            <select class="block_selector item_selector" data-dismisschange></select>
+          </th>
+        </tr>
+        <tr>
+          <th>數量</th>
+          <th colspan="2">
+            <input type="number" min='1' value="1"/>
+
+          </th>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="effect" commad="effect">
+      <h1>Effect</h1>
+      <h2>這個指令可以加效果在實體身上</h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/effect</th>
+          <th>目標</th>
+          <th>效果</th>
+          <th>持續時間</th>
+          <th>強度</th>
+        </tr>
+        <tr>
+          <td>/effect</td>
+          <td>
+            <select>
+              <option value="@a">所有玩家</option>
+              <option value="@p">最近玩家</option>
+              <option value="@r">隨機玩家(實體)</option>
+              <option value="@s">自己</option>
+              <option value="@e">所有實體</option>
+            </select>
+          </td>
+          <td>
+            <select>
+              <option value="speed"> 速度 </option>
+              <option value="slowness"> 緩慢 </option>
+              <option value="haste"> 挖掘加速 </option>
+              <option value="mining_fatigue"> 挖掘疲勞 </option>
+              <option value="strength"> 力量 </option>
+              <option value="instant_health">立即治療 </option>
+              <option value="instant_damage">立即傷害 </option>
+              <option value="jump_boost"> 跳躍提升 </option>
+              <option value="nausea"> 噁心 </option>
+              <option value="regeneration"> 回復 </option>
+              <option value="resistance"> 抗性 </option>
+              <option value="fire_resistance"> 抗火 </option>
+              <option value="water_breathing"> 水下呼吸 </option>
+              <option value="invisibility"> 隱形 </option>
+              <option value="blindness"> 失明 </option>
+              <option value="night_vision"> 夜視 </option>
+              <option value="hunger"> 飢餓 </option>
+              <option value="weakness"> 虛弱 </option>
+              <option value="poison"> 中毒 </option>
+              <option value="wither"> 凋零 </option>
+              <option value="health_boost"> 生命值提升 </option>
+              <option value="absorption"> 吸收 </option>
+              <option value="saturation">飽食 </option>
+              <option value="levitation"> 懸浮 </option>
+              <option value="fatal_poison"> 中毒(致命) </option>
+              <option value="conduit_power"> 海靈祝福 </option>
+              <option value="slow_falling"> 緩降 </option>
+              <option value="bad_omen"> 不祥之兆 </option>
+              <option value="village_hero"> 村莊英雄 </option>
+            </select>
+          </td>
+          <td>
+            <input type="number" />
+          </td>
+          <td>
+            <input type="number" />
+          </td>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="scoreboard_1" commad="scoreboard objectives">
+      <h1>Scoreboard objectives</h1>
+      <h2>這個指令可以增加或移除一個計分物件，或是設定計分物件的顯示位置</h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/scoreboard objectives</th>
+          <th>功能</th>
+          <th class='setdisplay hide' style="display:none">顯示位置</th>
+          <th>變數名稱</th>
+          <th class='add hide' style="display:none">dummy</th>
+          <th class='add hide' style="display:none">顯示名稱</th>
+        </tr>
+        <tr>
+          <td>/scoreboard objectives </td>
+          <td>
+            <select>
+              <option value="remove">移除計分物件</option>
+              <option value="add">新增計分物件</option>
+              <option value="setdisplay">設定計分物件的顯示位置</option>
+            </select>
+          </td>
+          <td class='setdisplay hide' style="display:none">
+            <select>
+              <option value="list">列表</option>
+              <option value="sidebar">側邊攔</option>
+              <option value="belowname">名字底下</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" value="test" required/>
+          </td>
+          <td class='add hide' style="display:none">
+            <input type="text" value="dummy" readonly="readonly" />
+          </td>
+          <td class='add hide' style="display:none">
+            <input type="text" />
+          </td>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+    <form class="content" id="scoreboard_2" commad="scoreboard players">
+      <h1>Scoreboard players</h1>
+      <h2>這個指令可以設定玩家在某個計分項目的分數</h2>
+      <h3>指令格式:</h3>
+      <table>
+        <tr>
+          <th>/scoreboard players</th>
+          <th>功能</th>
+          <th>目標玩家</th>
+          <th>變數名稱</th>
+          <th>分數</th>
+        </tr>
+        <tr>
+          <td>/scoreboard players </td>
+          <td>
+            <select>
+              <option value="add">加分</option>
+              <option value="set">設定</option>
+            </select>
+          </td>
+          <td>
+            <select>
+              <option value="@a">所有玩家</option>
+              <option value="@p">最近玩家</option>
+              <option value="@r">隨機玩家(實體)</option>
+              <option value="@s">自己</option>
+              <option value="@e">所有實體</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" value="test" required/>
+          </td>
+          <td>
+            <input type="number" value='0'  required/>
+          </td>
+        </tr>
+      </table>
+      <button>生成指令</button>
+    </form>
+
+    <form class="content" id="manifest">
+      <h1> 生成材質包描述檔 </h1>
+      <h2></h2>
+      <div>
+        <label style="font-size: 20px; font-weight: bold;">材質包名稱</label>
+        <input type='text' value='vallina' />
+      </div>
+      <div>
+        <label style="font-size: 20px; font-weight: bold;">材質包描述</label>
+        <input type='text' value='Add description here.' />
+      </div>
+      <div>
+        <label style="font-size: 20px; font-weight: bold;">材質包版本</label>
+        <input type='number' value='0' min='0' />
+        <label style="font-size: 20px; font-weight: bold;">.</label>
+        <input type='number' value='0' min='0' />
+        <label style="font-size: 20px; font-weight: bold;">.</label>
+        <input type='number' value='0' min='0' />
+      </div>
+      <div>
+        <label style="font-size: 20px; font-weight: bold;">最低遊戲版本</label>
+        <input type='number' min='0' value='1' />
+        <label style="font-size: 20px; font-weight: bold;">.</label>
+        <input type='number' min='0' value='2' />
+        <label style="font-size: 20px; font-weight: bold;">.</label>
+        <input type='number' min='0' value='6' />
+      </div>
+      <button>生成檔案</button>
+
+    </form>
+
+
+    <div id="tableOfContent">
+      <ul>
+      </ul>
+      <div class='trigger'>
+        <img width="70%" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAAAh0lEQVRoge3VMQqDQBBA0Y+nU48d9RoKIfeIlY2OkhTZ2eB/MN0WMyh8kCTp0gS8dzNED3tgCR6XngXogv3O3h88Kzhim9e3hzTRRf+uA2byv8YMtMF+H/9atRs5HvFI3UjST1h2y57Nshdi2aWbsOyWPZtlL2TAsku3YNktezbLXohll6T6rEp/E/0zQXYUAAAAAElFTkSuQmCC"/>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="/public/javascript/minecraft.js"></script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+body{
+  background-image: url('/public/image/minecraftBG.png');
+  background-size: cover;
+  background-color: rgba(255,255,255,0.4);
+  background-blend-mode: overlay;
+  background-attachment: fixed;
+  background-position: bottom;
+}
+#result{
+  width: calc(100% - 210px);;
+  text-align: center;
+  background: rgba(255,255,255,.3);
+  font-size: 20px;
+  font-weight: bold;
+  color: #e25e5e;
+  padding: 10px;
+}
+#result::selection{ background: transparent; }
+input[type='number'],input[pattern]{ width: 5em }
+h1{margin:0}
+h2{ font-size: 20px;}
+pre{font-family: 'Microsoft YaHei'}
+table{margin: 20px 0;}
+table th{border-bottom: 1px solid #aaa;padding-bottom:5px;}
+.content{
+  width:90%;
+  border: 2px solid #888;
+  border-radius: 10px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.4);
+  backdrop-filter: blur(5px);
+}
+#alert{
+  position: fixed;
+  background: #e25e5e;
+  color: white;
+  padding: 5px 20px;
+  margin: 0;
+  width: 200px;
+  border-radius: 7px;
+  text-align: center;
+  left: calc(50vw - 100px);
+  font-weight: bold;
+  z-index:100;
+  box-shadow: 0 0 10px #333;
+  animation: float-in 5s ease-in-out;
+}
+@keyframes float-in{
+  0%{bottom: -300px;}
+  20%{bottom: 20px}
+  90%{bottom: 20px}
+  100%{bottom: -300px;}
+}
+#tableOfContent {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+#tableOfContent .trigger {
+  border: 3px solid #555;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background: rgba(255,255,255,.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  backdrop-filter:blur(5px);
+}
+#tableOfContent .trigger:hover,
+#tableOfContent li:hover
+{background: rgba(180,180,180,.5) }
+#tableOfContent ul {
+  overflow: hidden;
+  float: right;
+  background: rgba(255,255,255,.5);
+  border-radius: 20px;
+  box-shadow: 0 0 10px #333;
+  backdrop-filter:blur(5px);
+  padding: 0;
+  border:0;
+  max-height:0;
+  list-style-type: none;
+  text-align: center;
+  transition: .3s ease-in-out ;
+}
+#tableOfContent.active ul {
+  padding: 20px 30px;
+  border: 3px solid #555;
+  max-height:100vh;
+}
+#tableOfContent a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
