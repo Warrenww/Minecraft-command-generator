@@ -1,6 +1,6 @@
 @font-face {
   font-family: TaipeiRegular;
-  src: url('/public/font.ttf')
+  src: url('/Minecraft-command-generator/public/font.ttf')
 }
 html{scroll-behavior: smooth}
 body::-webkit-scrollbar{width:0}

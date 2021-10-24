@@ -1,5 +1,5 @@
 body{
-  background-image: url('/public/image/minecraftBG.png');
+  background-image: url('/Minecraft-command-generator/public/image/minecraftBG.png');
   background-size: cover;
   background-color: rgba(255,255,255,0.4);
   background-blend-mode: overlay;
